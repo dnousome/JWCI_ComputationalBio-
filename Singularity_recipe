@@ -1,0 +1,47 @@
+Bootstrap: docker
+From: ubuntu:latest
+
+%environment
+	PATH=/usr/loca/bin:$PATH
+
+%post
+	apt-get -y update
+	apt-get -y install wget git autoconf build-essential libbz2-dev liblzma-dev zlib1g-dev libncurses5-dev  #python bwa fastqc 
+
+
+####Add STAR
+git clone https://github.com/alexdobin/STAR/ STAR
+cp STAR/bin/Linux_x86_64_static/STAR /usr/local/bin
+
+####Add samtools/htslib/bcftools
+git clone https://github.com/samtools/htslib htslib
+cd htslib
+autoheader
+autoconf
+./configure
+make
+make install
+cd ~
+
+git clone https://github.com/samtools/samtools samtools
+cd samtools
+autoheader
+autoconf -Wno-syntax
+./configure
+make
+make install
+cd ~
+
+git clone https://github.com/samtools/bcftools bcftools
+cd bcftools
+autoheader
+autoconf
+./configure
+make
+make install
+cd ~
+
+export LD_LIBRARY_PATH=/usr/local/lib 
+
+%labels
+Maintainer Darryl Nousome dnousome@gmail.com
